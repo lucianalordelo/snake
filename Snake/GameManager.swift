@@ -24,6 +24,7 @@ class GameManager {
         scene.playerPositions.append((10, 11))
         scene.playerPositions.append((10, 12))
         renderChange()
+        generateRandomPoint()
     }
     
     func renderChange() {
@@ -32,6 +33,11 @@ class GameManager {
                 node.fillColor = SKColor.cyan
             } else {
                 node.fillColor = SKColor.clear
+                if scene.randomPoint != nil {
+                    if Int((scene.randomPoint?.x)!) == y && Int((scene.randomPoint?.y)!) == x {
+                        node.fillColor = SKColor.red
+                    }
+                }
             }
         }
     }
@@ -59,6 +65,12 @@ class GameManager {
                 playerDirection = ID
             }
         }
+    }
+    
+    func generateRandomPoint () {
+        let randomX = CGFloat(arc4random_uniform(19))
+        let randomY = CGFloat(arc4random_uniform(39))
+        scene.randomPoint = CGPoint(x: randomX, y: randomY)
     }
     
     private func updatePlayerPosition() {
