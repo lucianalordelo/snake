@@ -30,30 +30,34 @@ class GameScene: SKScene {
         let swipeRight:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeR))
         swipeRight.direction = .right
         view.addGestureRecognizer(swipeRight)
+        
         let swipeLeft:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeL))
         swipeLeft.direction = .left
         view.addGestureRecognizer(swipeLeft)
+        
         let swipeUp:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeU))
         swipeUp.direction = .up
         view.addGestureRecognizer(swipeUp)
+        
         let swipeDown:UISwipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeD))
         swipeDown.direction = .down
         view.addGestureRecognizer(swipeDown)
-        
-       
         }
     
     @objc func swipeR() {
-        print("r")
+        game.swipe(ID: 3)
     }
+    
     @objc func swipeL() {
-        print("l")
+        game.swipe(ID: 1)
     }
+    
     @objc func swipeU() {
-        print("u")
+        game.swipe(ID: 2)
     }
+    
     @objc func swipeD() {
-        print("d")
+        game.swipe(ID: 4)
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -75,7 +79,6 @@ class GameScene: SKScene {
     }
 
     private func startGame() {
-        print("start game")
         gameLogo.run(SKAction.move(by: CGVector(dx: -50, dy: 600), duration: 0.5)) {
             self.gameLogo.isHidden = true
         }
@@ -168,10 +171,9 @@ class GameScene: SKScene {
                 cellNode.strokeColor = SKColor.black
                 cellNode.zPosition = 2
                 cellNode.position = CGPoint(x: x, y: y)
-                //add to array of cells -- then add to game board
                 gameArray.append((node: cellNode, x: i, y: j))
                 gameBG.addChild(cellNode)
-                //iterate x
+                
                 x += cellWidth
             }
             //reset x, iterate y
