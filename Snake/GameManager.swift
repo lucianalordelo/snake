@@ -13,6 +13,7 @@ class GameManager {
     var nextTime: Double?
     var timeExtension: Double = 0.15
     var playerDirection: Int = 1
+    var currentScore: Int = 0
     
     init(scene: GameScene) {
         self.scene = scene
@@ -25,6 +26,7 @@ class GameManager {
         scene.playerPositions.append((10, 12))
         renderChange()
         generateRandomPoint()
+        checkScore()
     }
     
     func renderChange() {
@@ -68,9 +70,26 @@ class GameManager {
     }
     
     func generateRandomPoint () {
-        let randomX = CGFloat(arc4random_uniform(19))
-        let randomY = CGFloat(arc4random_uniform(39))
+        var randomX = CGFloat(arc4random_uniform(19))
+        var randomY = CGFloat(arc4random_uniform(39))
+        while contains(a: scene.playerPositions, v: (Int(randomX), Int(randomY))) {
+            randomX = CGFloat(arc4random_uniform(19))
+            randomY = CGFloat(arc4random_uniform(39))
+        }
         scene.randomPoint = CGPoint(x: randomX, y: randomY)
+        
+    }
+    
+    private func checkScore() {
+        if scene.randomPoint != nil {
+            let x = scene.playerPositions[0].0
+            let y = scene.playerPositions[0].1
+            if Int((scene.randomPoint?.x)!) == y && Int((scene.randomPoint?.y)!) == x {
+                currentScore += 1
+                scene.currentScore.text = "Score: \(currentScore)"
+                generateRandomPoint()
+            }
+        }
     }
     
     private func updatePlayerPosition() {
