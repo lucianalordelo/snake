@@ -57,6 +57,8 @@ class GameManager {
             if time >= nextTime! {
                 nextTime = time + timeExtension
                 updatePlayerPosition()
+                checkForDeath()
+                endAnimation()
             }
         }
     }
@@ -64,7 +66,9 @@ class GameManager {
     func swipe(ID: Int) {
         if !(ID == 2 && playerDirection == 4) && !(ID == 4 && playerDirection == 2) {
             if !(ID == 1 && playerDirection == 3) && !(ID == 3 && playerDirection == 1) {
-                playerDirection = ID
+                if playerDirection != 0 {
+                    playerDirection = ID
+                }
             }
         }
     }
@@ -78,6 +82,55 @@ class GameManager {
         }
         scene.randomPoint = CGPoint(x: randomX, y: randomY)
         
+    }
+    
+    private func endAnimation() {
+        if playerDirection == 0 && scene.playerPositions.count > 0 {
+            var hasFinished = true
+            let headOfSnake = scene.playerPositions[0]
+            for position in scene.playerPositions {
+                if headOfSnake != position {
+                    hasFinished = false
+                }
+            }
+            if hasFinished {
+                playerDirection = 4
+                updateScore()
+                scene.randomPoint = nil
+                scene.playerPositions.removeAll()
+                renderChange()
+
+                    scene.gameBG.run(SKAction.scale(to: 0, duration: 0.4)) {
+                        self.scene.gameBG.isHidden = true
+                        self.scene.gameLogo.isHidden = false
+                        self.scene.gameLogo.run(SKAction.move(to: CGPoint(x: 0, y: (self.scene.frame.size.height / 2) - 200), duration: 0.5)) {
+                            self.scene.playButton.isHidden = false
+                            self.scene.playButton.run(SKAction.scale(to: 1, duration: 0.3))
+                            self.scene.bestScore.run(SKAction.move(to: CGPoint(x: 0, y: self.scene.gameLogo.position.y - 50), duration: 0.3))
+                        }
+                }
+            }
+        }
+    }
+    
+    private func updateScore() {
+        if currentScore > UserDefaults.standard.integer(forKey: "bestScore") {
+            UserDefaults.standard.set(currentScore, forKey: "bestScore")
+        }
+        currentScore = 0
+        scene.currentScore.text = "Score: 0"
+        scene.bestScore.text = "Best Score: \(UserDefaults.standard.integer(forKey: "bestScore"))"
+    }
+    
+    private func checkForDeath() {
+        if scene.playerPositions.count > 0 {
+            var arrayOfPositions = scene.playerPositions
+            let headOfSnake = arrayOfPositions[0]
+            arrayOfPositions.remove(at: 0)
+            if contains(a: arrayOfPositions, v: headOfSnake) {
+                playerDirection = 0
+            }
+        }
     }
     
     private func checkScore() {
@@ -120,6 +173,11 @@ class GameManager {
             //down
             xChange = 0
             yChange = 1
+            break
+        case 0:
+            //dead
+            xChange = 0
+            yChange = 0
             break
         default:
             break
